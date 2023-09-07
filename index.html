@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Reproductor de Video con Socket.IO</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <h1>Reproductor de Video</h1>
+
+    <!-- Formulario para ingresar la URL del video -->
+    <form id="videoForm" class="text-center my-4">
+        <label for="videoUrl" class="block text-lg mb-2">URL del Video:</label>
+        <input type="text" id="videoUrl" name="videoUrl" placeholder="Ingrese la URL del video"
+            class="border-2 border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-blue-500">
+    </form>
+
+    <!-- Reproductor de video -->
+    <div class="max-w-3xl mx-auto">
+        <video id="videoPlayer" controls class="w-full">
+            <!-- Aquí se mostrará el video -->
+        </video>
+    </div>
+
+    <!-- Botones de control -->
+    <div class="text-center mt-4">
+        <button id="playButton"
+            class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full mr-4">
+            <i class="fa-solid fa-play"></i>
+            Play
+        </button>
+        <button id="pauseButton"
+            class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full mr-4">
+            <i class="fa-solid fa-pause"></i>
+            Pausar
+        </button>
+        <button id="stopButton"
+            class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-full">
+            <i class="fa-solid fa-stop"></i>
+            Detener
+        </button>
+    </div>
+    <script src="https://kit.fontawesome.com/2b5881a8b5.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        var socket = io();
+        var videoPlayer = document.getElementById('videoPlayer');
+        var videoForm = document.getElementById('videoForm');
+        var playButton = document.getElementById('playButton');
+        var pauseButton = document.getElementById('pauseButton');
+        var stopButton = document.getElementById('stopButton');
+        // Escuchar el evento "playVideo" del servidor
+        socket.on('playVideo', () => {
+            console.log('playVideo client side');
+            videoPlayer.play();
+        });
+
+        socket.on('pauseVideo', () => {
+            console.log('pauseVideo client side');
+            videoPlayer.pause();
+        });
+
+        socket.on('stopVideo', () => {           
+            videoPlayer.pause();
+            videoPlayer.currentTime = 0;
+        });
+
+        // Manejar el envío del formulario
+        videoForm.addEventListener('input', function (event) {
+            event.preventDefault();
+            var videoUrl = document.getElementById('videoUrl').value;
+            videoPlayer.src = videoUrl;
+
+
+        });
+        playButton.addEventListener('click', function (event) {
+            event.preventDefault();
+            socket.emit('playVideo');
+        });
+        
+
+        // Manejar clic en el botón de pausa
+        pauseButton.addEventListener('click', function () {
+            if (!videoPlayer.paused) {
+                videoPlayer.pause();
+                socket.emit('pauseVideo');
+            }
+        });
+
+        // Manejar clic en el botón de stop (volver al inicio)
+        stopButton.addEventListener('click', function () {
+            if (!videoPlayer.paused) {
+                videoPlayer.pause();
+                socket.emit('stopVideo');
+            }
+            videoPlayer.currentTime = 0;
+        });
+
+// ...
+
+    </script>
+</body>
+
+</html>
