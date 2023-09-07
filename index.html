@@ -11,11 +11,25 @@
     <h1>Reproductor de Video</h1>
 
     <!-- Formulario para ingresar la URL del video -->
-    <form id="videoForm" class="text-center my-4">
-        <label for="videoUrl" class="block text-lg mb-2">URL del Video:</label>
-        <input type="text" id="videoUrl" name="videoUrl" placeholder="Ingrese la URL del video"
-            class="border-2 border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-blue-500">
-    </form>
+    <div class="text-center my-4">
+        <select id="videoSelect" class="border-2 border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-blue-500">
+            <option value="">Seleccionar un video</option> <!-- Opción nula -->
+            <option value="https://container-video-mp4.s3.amazonaws.com/prod-video1.mp4">Video-track 1</option>
+            <option value="https://container-video-mp4.s3.amazonaws.com/asl-video1.mp4">Video-ASL 1</option>
+            <option value="https://container-video-mp4.s3.amazonaws.com/prod-video2.mp4">Video-track 2</option>
+            <option value="https://container-video-mp4.s3.amazonaws.com/asl-video2.mp4">Video-ASL 2</option>
+            <option value="https://container-video-mp4.s3.amazonaws.com/prod-video3.mp4">Video-track 3</option>
+            <option value="https://container-video-mp4.s3.amazonaws.com/asl-video3.mp4">Video-ASL 3</option>
+            <option value="https://container-video-mp4.s3.amazonaws.com/prod-video4.mp4">Video-track 4</option>
+            <option value="https://container-video-mp4.s3.amazonaws.com/asl-video4.mp4">Video-ASL 4</option>
+            <option value="https://container-video-mp4.s3.amazonaws.com/prod-video5.mp4">Video-track 5</option>
+            <option value="https://container-video-mp4.s3.amazonaws.com/asl-video5.mp4">Video-ASL 5</option>
+            <option value="https://container-video-mp4.s3.amazonaws.com/prod-video6.mp4">Video-track 6</option>
+            <option value="https://container-video-mp4.s3.amazonaws.com/asl-video6.mp4">Video-ASL 6</option>
+            <option value="https://container-video-mp4.s3.amazonaws.com/prod-test.mp4">Video-track TEST</option>
+            <option value="https://container-video-mp4.s3.amazonaws.com/asl-test.mp4">Video-ASL TEST</option>
+        </select>       
+    </div>
 
     <!-- Reproductor de video -->
     <div class="max-w-3xl mx-auto">
@@ -47,10 +61,19 @@
     <script>
         var socket = io();
         var videoPlayer = document.getElementById('videoPlayer');
-        var videoForm = document.getElementById('videoForm');
+        var videoSelect = document.getElementById('videoSelect');
         var playButton = document.getElementById('playButton');
         var pauseButton = document.getElementById('pauseButton');
         var stopButton = document.getElementById('stopButton');
+        
+        
+        videoSelect.addEventListener('change', function (event) {
+            event.preventDefault();
+            var selectedVideo = videoSelect.value;
+            videoPlayer.src = selectedVideo;
+           
+        });   
+
         // Escuchar el evento "playVideo" del servidor
         socket.on('playVideo', () => {
             console.log('playVideo client side');
@@ -67,14 +90,7 @@
             videoPlayer.currentTime = 0;
         });
 
-        // Manejar el envío del formulario
-        videoForm.addEventListener('input', function (event) {
-            event.preventDefault();
-            var videoUrl = document.getElementById('videoUrl').value;
-            videoPlayer.src = videoUrl;
-
-
-        });
+     
         playButton.addEventListener('click', function (event) {
             event.preventDefault();
             socket.emit('playVideo');
